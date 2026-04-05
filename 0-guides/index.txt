@@ -1,0 +1,126 @@
+import dotenv from "dotenv";
+dotenv.config();
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken'
+import { appError, catchAsync } from "./middleware/appError.js";
+import connectDB from "./config/connectDB.js";
+import User from "./models/userSC.js";
+import auth from './middleware/auth.js'
+const app = express();
+
+app.use(helmet());
+app.use(cors({ origin: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+//home route
+app.get(
+  "/",
+  catchAsync(async (req, res, next) => {
+    res.status(200).json({
+      success: true,
+      message: "Home Page",
+    });
+  }),
+);
+
+//register route
+app.post(
+  "/register",
+  catchAsync(async (req, res, next) => {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+      next(new appError("Username, email or password required", 400));
+    }
+
+    const newUser = new User({
+      username,
+      email,
+      password: await bcrypt.hash(password, 6),
+    });
+    await newUser.save();
+    if (!newUser) {
+      next(new appError("Databse error", 10001));
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "user created",
+      data: { newUser },
+    });
+  }),
+);
+
+//login route
+app.post(
+  "/login",
+  catchAsync(async (req, res, next) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return next(new appError("Email or password required", 400));
+    }
+
+    const user = await User.findOne({ email: email }).select("+password");
+    if (!user) {
+     return next(new appError("User not found", 400));
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return next(new appError("User or Password is invalid", 400));
+    }
+
+    const token = jwt.sign({id: user.id}, process.env.SECRET, {expiresIn: '1h'})
+    res.status(200).json({
+      success: true,
+      message: "Welocme to Mesfor",
+      data: { token },
+    });
+  }),
+);
+
+app.get('/admin', auth, catchAsync(async(req, res, next) => {
+  res.status(200).json({
+    success: true,
+    data: req.user,
+    message: 'Welcome to Mesfor'
+  })
+}))
+
+
+//error
+app.use((req, res, next) => {
+  next(new appError('Page not found', 404));
+});
+
+
+app.use((err, req, res, next) => {
+  console.error(err.stack)
+  const statusCode = err.statusCode || 500;  
+  res.status(statusCode).json({
+    status: err.status,
+    message: err.isOperational ? err.message : 'Somthing is wrong!',
+    path: err.path,
+    method: err.method
+  });
+});
+
+//server
+const start = async () => {
+  const PORT = process.env.PORT || 4000;
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.error("Server is running on PORT", PORT);
+    });
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+};
+
+start();
+

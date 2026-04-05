@@ -1,0 +1,43 @@
+sudo apt install redis-server
+sudo systemctl restart redis-service
+redis-cli
+and ping
+
+npm i redis
+
+
+//in config folder connect redis
+
+import { createClient } from 'redis'
+
+const client = createClient({
+  url: "redis://localhost:6379"
+})
+
+client.on('error', (err) => {
+  console.error('Redis error:', err)
+})
+
+await client.connect()
+export default client
+
+//index.js
+import client from './config/connectRedis.js'
+app.get('/', async(get, res) => {
+  const user = {
+    name: 'mesto',
+    age: 50
+  }
+  await client.setEx('users', 60, JSON.stringify(user))
+  res.send('Hello')
+})
+
+app.get('/admin', async(req, res, next) => {
+  const user = await client.get('users')
+  res.status(200).json({
+    status: 200,
+    success: true,
+    data: JSON.parse(user)
+  })
+})
+
