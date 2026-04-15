@@ -1,0 +1,47 @@
+import ErrorHandler from "./errorHandler.js";
+import catchAsync from "./catchAsync.js";
+import jwt from 'jsonwebtoken'
+
+const auth = catchAsync(async(req, res, next) => {
+  const { authorization } = req.headers
+  if(!authorization || !authorization.startsWith('Bearer ')) {
+    return next(new ErrorHandler(401, 'Unauthorized'))
+  }
+
+  const token = authorization.replace('Bearer ', '')
+  if(!token) {
+    return next(new ErrorHandler(401, 'Invalid token!'))
+  }
+  req.user = jwt.verify(token, process.env.JWT_SECRET)
+  next()
+})
+
+export default auth
+
+👉 login route
+client must store token in localstoateg or in wuex pinia
+app.post('/login', tryCatch(async(req, res, next) => {
+  const token = jwt.sign({id: 1}, process.env.JWT_SECRET, {expiresIn: '10m'})
+  res.status(200).json({
+    status:200,
+    success: true,
+    message:'Welcome to Mesfor',
+    token
+  })
+}))
+
+👉 client.http
+GET http://localhost:3000/admin
+Authorization: Bearer token
+or in frontend----------------------------------------------
+fetch('https://reqbin.com/echo/get/json', {
+  headers: {Authorization: 'Bearer {token}'}
+})
+.then(resp => resp.json())
+.then(json => console.log(JSON.stringify(json)))
+
+👉 admin route
+app.get('/admin', verifyToken, tryCatch(async(req, res, next) => {
+  res.status(200).json({message: 'Welcome to Mesfor'})
+}))
+

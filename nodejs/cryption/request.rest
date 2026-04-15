@@ -1,9 +1,0 @@
-POST http://localhost:3000/senduser
-Content-Type: application/json
-
-{
-  "name":"mesto",
-  "pass": "9090"
-}
-###
-GET http://localhost:3000/getuser

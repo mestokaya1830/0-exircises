@@ -1,0 +1,84 @@
+import mongoose from 'mongoose';
+
+const MONGO_URL = process.env.MONGO_URL;
+const IS_IPV6_ENABLED = process.env.MONGO_IPV6 === 'true';
+
+if (!MONGO_URL) {
+  throw new Error('Please define the MONGO_URL environment variable inside .env');
+}
+
+const options = {
+  minPoolSize: 2,
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  heartbeatFrequencyMS: 10000,
+  family: IS_IPV6_ENABLED ? 6 : 4,
+};
+
+let isConnecting = false;
+let retryCount = 0;
+const MAX_RETRIES = 5;
+
+const connectDB = async () => {
+  if (isConnecting) return;
+  isConnecting = true;
+
+  try {
+    mongoose.set('strictQuery', true);
+    await mongoose.connect(MONGO_URL, options);
+    retryCount = 0;
+    console.log('MongoDB: Connected successfully');
+  } catch (error) {
+    console.error(`MongoDB: Connection error (attempt ${retryCount + 1}):`, error.message);
+
+    if (retryCount < MAX_RETRIES) {
+      const delay = Math.min(1000 * 2 ** retryCount, 30000); // exponential backoff, max 30s
+      retryCount++;
+      console.warn(`MongoDB: Retrying in ${delay / 1000}s...`);
+      setTimeout(() => {
+        isConnecting = false;
+        connectDB();
+      }, delay);
+    } else {
+      console.error('MongoDB: Max retries reached. Exiting.');
+      process.exit(1);
+    }
+  } finally {
+    isConnecting = false;
+  }
+};
+
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose: Connection established');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error(`Mongoose: Connection error: ${err.message}`);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.warn('Mongoose: Disconnected. Mongoose will attempt to reconnect...');
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('Mongoose: Reconnected successfully');
+  retryCount = 0;
+});
+
+const gracefulShutdown = async (signal) => {
+  console.log(`\nReceived ${signal}. Closing MongoDB connection...`);
+  try {
+    await mongoose.connection.close();
+    console.log('Mongoose: Connection closed gracefully');
+  } catch (err) {
+    console.error('Mongoose: Error during shutdown:', err.message);
+  } finally {
+    process.exit(0);
+  }
+};
+
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+
+export default connectDB;

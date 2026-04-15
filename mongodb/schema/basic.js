@@ -1,29 +1,81 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
+import bcrypt from 'bcrypt'
 
-const usersSC = new mongoose.Schema({
-  name: {
-    type: String, 
-    required:[true, 'Name is required'], 
-    minlength:['3', 'Name must be more then 3'], 
-    maxlength:['255','Name must be less then 255']
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: [true, 'Username is required'],
+      trim: true,
+      minlength: [3, 'Username must be at least 3 characters'],
+      maxlength: [30, 'Username must be at most 30 characters'],
+      match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers and underscore'],
+      unique: true,
+    },
+
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      trim: true,
+      lowercase: true,
+      unique: true,
+      match: [/([^ ]+)@([^ ]+)\.([a-z]{2,3})(\.[a-z]{2,3})?$/, 'Email is not valid'],
+    },
+
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+      minlength: [6, 'Password must be at least 6 characters'],
+      select: false, // query'lerde password otomatik gelmez
+    },
+
+    role: {
+      type: String,
+      enum: {
+        values: ['user', 'admin', 'moderator'],
+        message: '{VALUE} is not a valid role',
+      },
+      default: 'user',
+    },
+
+    age: {
+      type: Number,
+      min: [18, 'Age must be at least 18'],
+      max: [120, 'Age must be at most 120'],
+    },
+
+    phone: {
+      type: String,
+      match: [/^\+?[1-9]\d{7,14}$/, 'Phone number is not valid'],
+      default: null,
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+
+    profileImage: {
+      type: String,
+      default: null,
+    },
+
+    loginAttempts: {
+      type: Number,
+      default: 0,
+      max: [5, 'Too many login attempts'],
+    },
   },
-  email: {
-    type: String, 
-    unique:[true, 'This email is exists'], 
-    required:[true, 'Email is required'], 
-    maxlength:['255','Email must be less then 255']
-  },
-  password: {
-    type: String, 
-    required:[true, 'Password is required'], 
-    minlength:['3', 'Password must be more then 3'], 
-    maxlength:['255','Password must be less then 255']
-  },
-  token: {type: String}
-})
+  {
+    timestamps: true,           // createdAt, updatedAt otomatik
+    versionKey: false,          // __v field'ini kaldırır
+  }
+)
 
-export default mongoose.model('users', usersSC)
+// ── Index ──────────────────────────────────────────────
+userSchema.index({ email: 1 })
+userSchema.index({ username: 1 })
 
+const User = mongoose.model('User', userSchema)
 
-not when unique not works
-open mongosh use users then paste this db.users.ensureIndex( { "email": 1 }, { unique: true } )
+export default User

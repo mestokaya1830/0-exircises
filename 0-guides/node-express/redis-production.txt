@@ -1,0 +1,40 @@
+import { createClient } from "redis";
+import { appError } from "../middleware/appError.js";
+
+const client = createClient({
+  url: process.env.REDIS_URL,
+  socket: {
+    reconnectStrategy: (retries) => {
+      if (retries > 10) {
+        console.error("Redis: Maximum retry attempts reached.");
+        return new appError("Redis connection lost", 500);
+      }
+      return Math.min(retries * 50, 2000);
+    },
+  },
+});
+
+client.on("connect", () => console.log("Redis: Connecting..."));
+client.on("ready", () => console.log("Redis: Client ready and connected!"));
+client.on("error", (err) => console.error("Redis Error:", err));
+client.on("reconnecting", () =>
+  console.warn("Redis: Reconnecting to server..."),
+);
+
+const start = async () => {
+  try {
+    await client.connect();
+  } catch (err) {
+    console.error("Redis: Failed to initialize connection:", err);
+  }
+};
+start();
+
+process.on("SIGINT", async () => {
+  await client.quit();
+  console.log("Redis: Connection closed through app termination");
+  process.exit();
+});
+
+export default client;
+
