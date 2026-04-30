@@ -33,27 +33,4 @@ app.use((err, req, res, next) => {
     message: err.isOperational ? err.message : 'Internal Server Error',
     error: process.env.NODE_ENV === 'development' ? err.stack : undefined
   });
-});app.use((err, req, res, next) => {
-  console.error(err.stack);
-  const statusCode = err.statusCode || 500;
-
-  logger.error({
-    success: false,
-    url: req.url,
-    method: req.method,
-    timestamp: new Date().toISOString(),
-  });
-
-  res.status(statusCode).json({
-    success: false,
-    url: req.url,
-    method: req.method,
-    timestamp: new Date().toISOString(),
-    message:
-      process.env.NODE_ENV === "production" && !err.isOperational
-        ? "Internal Server Error!"
-        : err.message,
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-  });
 });
-

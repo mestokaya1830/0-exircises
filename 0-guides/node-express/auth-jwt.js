@@ -1,21 +1,28 @@
-import jwt from 'jsonwebtoken'
-import ErrorHandler from './errorHandler.js';
+import jwt from "jsonwebtoken";
+import ErrorHandler from "./errorHandler.js";
 
 const auth = (req, res, next) => {
   try {
-    const { authorization } = req.headers
-    if(!authorization || !authorization.startsWith('Bearer ')){
-      return next(new ErrorHandler('Unauthorized!'))
-    }
-    const token = authorization.replace('Bearer ', '')
-    req.user = jwt.verify(token , process.env.JWT)
-    next()
-  } catch (error) {
-    return next(new ErrorHandler('Invalid token!', 401))
-  }
-} 
+    const { authorization } = req.headers;
 
-export default auth
+    if (!authorization || !authorization.startsWith("Bearer ")) {
+      throw new ErrorHandler("Unauthorized!", 401);
+    }
+    const token = authorization.replace("Bearer ", "");
+
+    if (!token) {
+      throw new ErrorHandler("Invalid Token", 401);
+    }
+    req.user = jwt.verify(token, process.env.JWT);
+  } catch (err) {
+    throw new ErrorHandler("Invalid Token", 401);
+  }
+
+  next();
+};
+
+export default auth;
+
 
 
 👉 login route

@@ -1,30 +1,26 @@
 🟢 NVM (Node Version Manager) Quick Guide
-1️⃣ Installation
-First, ensure curl is installed, then download and run the NVM install script.
 
-🛠️ Install Curl: sudo apt install curl
+🛠️ Install Curl: 
+sudo apt install curl
 
-📥 Install NVM: curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+📥 Install NVM: 
+curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 
-💡 Note: Restart your terminal after installation for changes to take effect.
 
-2️⃣ Exploring Versions
-Check what versions are available in the cloud versus what you have on your machine.
+🌍 List Remote Versions (All available): 
+nvm list-remote
 
-🌍 List Remote Versions (All available): nvm list-remote
+🏠 List Local Versions (Already installed): 
+nvm list
 
-🏠 List Local Versions (Already installed): nvm list
+📍 Check Current Active Version: 
+nvm current
 
-📍 Check Current Active Version: nvm current
+📥 Install a Specific Version: 
+nvm i v20.20.0
 
-3️⃣ Installing & Switching
-Download specific versions and swap between them instantly.
+🔄 Switch to a Version: 
+nvm use v20.20.0
 
-📥 Install a Specific Version: nvm i v20.20.0
-
-🔄 Switch to a Version: nvm use v20.20.0
-
-4️⃣ Persistence (The Default Version)
-Prevent your terminal from reverting to an old version every time you open a new tab.
-
-📌 Set Permanent Default: nvm alias default 20.20.0
+📌 Set Permanent Default: 
+nvm alias default 20.20.0

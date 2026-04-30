@@ -11,7 +11,6 @@ const logger = winston.createLogger({
   defaultMeta: {
     service: "monolith-api",
   },
-  silent: process.env.NODE_ENV === "production",
   format: combine(
     timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     errors({ stack: true }),
@@ -41,8 +40,9 @@ const logger = winston.createLogger({
       format: combine(
         colorize(),
         timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-        printf(({ level, message, timestamp, stack }) => {
-          return `${timestamp} [${level}]: ${stack || message}`;
+        printf(({ level, message, timestamp, stack, service, ...meta }) => {
+          const metaStr = Object.keys(meta).length ? JSON.stringify(meta) : '';
+          return `${timestamp} [${level}] [${service}]: ${stack || message} ${metaStr}`;
         }),
       ),
     }),

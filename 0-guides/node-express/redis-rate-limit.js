@@ -1,37 +1,47 @@
-iimport redis from "../config/connectRedis.js";
-import ErrorHandler from "./errorHandler.js";
+import redis from '../config/connectRedis.js';
+import ErrorHandler from './errorHandler.js';
+import catchAsync from './catchAsync.js'
 
-const rateLimiter = (limit = 10, windowSec = 60, type = "ip") => {
-  return async (req, res, next) => {
-    try {
-      const id =
-        type === "user"
-          ? req.user?.id || req.ip
-          : req.ip;
+redis.defineCommand('rateLimitCheck', {
+  numberOfKeys: 1,
+  lua: `
+    local current = redis.call('INCR', KEYS[1])
+    if current == 1 then
+      redis.call('EXPIRE', KEYS[1], ARGV[1])
+    end
+    return current
+  `,
+});
 
-      const key = `rl:${req.method}:${req.baseUrl}:${id}`;
+const rateLimter = (limit = 5, period = 60, type = 'user') => 
+  catchAsync(async (req, res, next) => {
+    const ide = {
+      ip: req.ip,
+      user: req.user?.id,
+      apikey: req.headers['apikey'],
+      global: 'global'
+    }[type];
 
-      const count = await redis.incr(key);
-
-      if (count === 1) {
-        await redis.expire(key, windowSec);
-      }
-
-      if (count > limit) {
-        return next(
-          new ErrorHandler("Too many requests", 429)
-        );
-      }
-
-      next();
-    } catch (err) {
-      console.error("RateLimiter error:", err.message);
-      next(); // fail-open
+    if (!ide) {
+      return next(new ErrorHandler('Rate limit identifier is missing', 401));
     }
-  };
-};
 
-export default rateLimiter;
+    const key = `rl:${req.baseUrl}:${req.path}:${ide}`;
+    const count = await redis.rateLimitCheck(key, period);
+
+    res.setHeader('X-RateLimit-Limit', limit);
+    res.setHeader('X-RateLimit-Remaining', Math.max(0, limit - count));
+
+    if (count > limit) {
+      return next(new ErrorHandler('Too many requests, please try again later.', 429));
+    }
+    
+    next();
+});
+
+export default rateLimter;
+
+
 
 //index.js
-app.set('trust proxy', true) //for nginx client ip
+app.set('proxy trust', true)
