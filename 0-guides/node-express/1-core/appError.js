@@ -1,8 +1,9 @@
 class AppError extends Error {
-  constructor(message, statusCode) {
+  constructor(message, statusCode, code) {
     super(message);
     this.statusCode = statusCode;
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
+    this.code = code
     this.isOperational = true;
 
     Error.captureStackTrace(this, this.constructor);
@@ -27,10 +28,14 @@ app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   res.status(statusCode).json({
     success: false,
+    requestID: req.id,
+    ip: req.ip,
+    url: req.originalUrl,
     method: req.method,
-    url: req.url,
     timestamp: new Date().toISOString(),
-    message: err.isOperational ? err.message : 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    code: err.code,
+    status: err.status,
+    message: err.isOperational ? err.message : "Server Error",
+    stack: process.env.NODE_ENV == "development" ? err.stack : undefined,
   });
 });

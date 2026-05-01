@@ -4,13 +4,9 @@ import "winston-daily-rotate-file";
 const { combine, errors, json, timestamp, colorize, printf } = winston.format;
 
 const logger = winston.createLogger({
+  // 'app' yerine 'service' kullanarak printf ile uyumlu hale getirdik
+  defaultMeta: { service: "my-app", env: process.env.NODE_ENV ?? "development" },
   level: process.env.NODE_ENV === "production" ? "info" : "debug",
-  //“Error olduğunda uygulamayı otomatik kapatma, kontrol bende olsun.”
-  exitOnError: false,
-  // ✅ tüm loglara otomatik metadata
-  defaultMeta: {
-    service: "monolith-api",
-  },
   format: combine(
     timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     errors({ stack: true }),
@@ -28,7 +24,7 @@ const logger = winston.createLogger({
 
     new winston.transports.DailyRotateFile({
       filename: "log/error/%DATE%.log",
-      level: "error",
+      level: "error", // Sadece error ve altını (crit, alert, emerg) yazar
       maxFiles: "14d",
       maxSize: "20m",
       datePattern: "YYYY-MM-DD",
@@ -36,23 +32,27 @@ const logger = winston.createLogger({
     }),
 
     new winston.transports.Console({
-      silent: process.env.NODE_ENV !== "development",
+      // Production'da console'u tamamen kapatmak yerine 'error' seviyesine çekmek daha güvenli olabilir
+      // ama tercihine göre 'silent' kalabilir.
+      silent: process.env.NODE_ENV === "production", 
       format: combine(
         colorize(),
         timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
         printf(({ level, message, timestamp, stack, service, ...meta }) => {
-          const metaStr = Object.keys(meta).length ? JSON.stringify(meta) : '';
+          // Meta içindeki env ve service'i tekrar metaStr içinde yazdırmamak için ayıralım
+          const { env, ...rest } = meta; 
+          const metaStr = Object.keys(rest).length ? JSON.stringify(rest) : '';
+          
+          // Stack varsa stack'i, yoksa message'ı yazdır
           return `${timestamp} [${level}] [${service}]: ${stack || message} ${metaStr}`;
         }),
       ),
     }),
   ],
 
-  //“Uygulama çökmeden hemen önce bu hatayı dosyaya yaz.” yani bunlari yakalar (sync hata (throw))
   exceptionHandlers: [
     new winston.transports.DailyRotateFile({
       filename: "log/exceptions/%DATE%.log",
-      level: "error",
       maxFiles: "30d",
       maxSize: "20m",
       datePattern: "YYYY-MM-DD",
@@ -60,18 +60,18 @@ const logger = winston.createLogger({
     }),
   ],
 
-  //catch olmayan promislari yakalar (async hata (Promise/await))
   rejectionHandlers: [
     new winston.transports.DailyRotateFile({
       filename: "log/rejections/%DATE%.log",
-      level: "error",
       maxFiles: "30d",
       maxSize: "20m",
       datePattern: "YYYY-MM-DD",
       zippedArchive: true,
     }),
   ],
+  
+  // Hata olduğunda uygulamanın hemen kapanmasını istemiyorsan false yapabilirsin
+  exitOnError: false, 
 });
 
 export default logger;
-

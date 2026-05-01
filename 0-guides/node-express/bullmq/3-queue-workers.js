@@ -1,7 +1,7 @@
 import { Worker, Queue } from 'bullmq'
 import connectRedis from '../redis/connectRedis.js'
 import logger from '../utils/logger.js'
-// import { sendEmailWithProvider } from '../utils/emailProvider.js'
+// import { sendEmailWithProvider } from '../utils/emailProvider.js'//smtp nodemailer
 
 const deadLetterQueue = new Queue('email-dlq', { connection: connectRedis })
 
