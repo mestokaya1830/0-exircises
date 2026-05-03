@@ -62,7 +62,7 @@ maxmemory-policy allkeys-lru //remove old cache when ram is full
 //when update db delete cahce manully
 await redis.del("users");
 await redis.unlink("users");//remove ath the background
-await redis.flushDb()//: Sadece bağlı olduğun veritabanındaki (örneğin DB 0) tüm anahtarları siler.
+await redis.flushdb()//: Sadece bağlı olduğun veritabanındaki (örneğin DB 0) tüm anahtarları siler.
 
 await redis.flushAll()//: Redis'in içindeki (tüm veritabanlarındaki) istisnasız her şeyi siler.
 
