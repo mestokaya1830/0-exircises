@@ -1,23 +1,51 @@
-app.post('/newuser', async(req, res) => {
-  // var newusers = []
-  // for (const key in req.body.newuser) {
-  //   newusers.push({
-  //     name:req.body.newuser[key].name,
-  //     lastname:req.body.newuser[key].lastname,
-  //     age:req.body.newuser[key].age
-  //   })
-  // }
-  // let allusers = req.body.newuser.map(item => {
-  //   return {
-  //     name:item.name,
-  //     lastname:item.lastname,
-  //     age:item.age
-  //   }
-  // })
+app.post('/newuser', async (req, res) => {
   try {
-    await users.insertMany(req.body.newuser)
-    res.json(res.statusCode)
+    const newUsers = req.body.newuser.map(user => ({
+      name: user.name,
+      lastname: user.lastname,
+      age: user.age,
+    }))
+
+    await users.insertMany(newUsers)
+
+    res.status(201).json({
+      success: true,
+      message: 'Users created',
+    })
   } catch (err) {
-    console.log(err)
+    console.error(err)
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    })
+  }
+})
+
+
+//eger burada bcrypt olsaydı Promise.all kullanmak mantıklı olurdu çünkü hash işlemleri async ve pahalı işlemler.
+
+app.post('/newuser', async (req, res) => {
+  try {
+    const newUsers = await Promise.all(
+      req.body.newuser.map(async user => ({
+        name: user.name,
+        lastname: user.lastname,
+        age: user.age,
+        password: await bcrypt.hash(user.password, 10),
+      }))
+    )
+
+    await users.insertMany(newUsers)
+
+    res.status(201).json({
+      success: true,
+    })
+  } catch (err) {
+    console.error(err)
+
+    res.status(500).json({
+      success: false,
+    })
   }
 })

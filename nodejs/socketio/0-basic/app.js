@@ -1,4 +1,5 @@
 import express from 'express'
+dotenv.config()
 import cors from 'cors'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
@@ -14,21 +15,17 @@ app.use(helmet())
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(express.static('static'))
-dotenv.config()
 
-app.get('/', (req, res) => {
-  res.sendFile('index.html')
-})
 
 
 io.on('connection', (socket) => {
   console.log('a user connected')
 
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
+  socket.on('client-message', (msg) => {
+    io.emit('server-message', msg);
   })
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', () => { 
     console.log('user disconnected')
   })
 })

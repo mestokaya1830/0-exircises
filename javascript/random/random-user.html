@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <script>
+    for (let i = 0; i < 400; i++) {
+      let username = Math.random().toString(36).substring(2, 15)
+      let email = ['@gmail.com', '@yahoo.com', '@outlook.com']
+      let password = Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
+      email = username + email[Math.floor(Math.random() * email.length)]
+      
+      const user = {
+        username: username,
+        email: email,
+        password: password
+      }
+      console.log(user)
+    }
+  </script>
+</body>
+</html>
+
+
+//in nodejs
+const users = await Promise.all(
+    Array.from({ length: 400 }).map(async () => {
+      let username = Math.random().toString(36).substring(2, 15);
+
+      let email = ["@gmail.com", "@yahoo.com", "@outlook.com"];
+
+      let password = Math.floor(Math.random() * 1000000)
+        .toString()
+        .padStart(6, "0");
+
+      return {
+        username,
+        email: username + email[Math.floor(Math.random() * email.length)],
+        password: await bcrypt.hash(password, 4),
+      };
+    }),
+  );
+
+  await userSC.insertMany(users);

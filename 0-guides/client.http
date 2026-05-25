@@ -1,0 +1,31 @@
+###
+GET http://localhost:4000/api
+
+
+
+###
+POST http://localhost:4000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "mesto",
+  "email": "mesto@test.com",
+  "password": "11130113"
+}
+
+
+
+###
+POST http://localhost:4000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "mesto@test.com",
+  "password": "11130113"
+}
+
+
+
+###
+GET http://localhost:4000/api/users?page=3&limit=10
+Authorization:  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmEwZGY3ZTNhM2MzZTdmN2RjOWUwOTcwIiwiaWF0IjoxNzc5NjUxNzEyLCJleHAiOjE3Nzk2NTUzMTJ9.4yGycmxe-YVu_IXxQWAv9dbP3KSyHrtvS3vDLNkLP-0

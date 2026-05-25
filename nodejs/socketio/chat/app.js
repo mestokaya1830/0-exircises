@@ -23,11 +23,11 @@ app.get('/', function (req, res) {
 
 io.on('connection',(socket) =>{
   console.log('Connected')
-  socket.on('newuser', (data) => {
-    socket.broadcast.emit('newuser', data + ' connected')//expect sender
+  socket.on('newuser-client', (data) => {
+    socket.broadcast.emit('newuser-server', data + ' connected')//expect sender
   })
-  socket.on('msg', (data) => {
-    io.emit('msg', data)//include sender
+  socket.on('msg-client', (data) => {
+    io.emit('msg-server', data)//include sender
   })
   socket.on('disconnect', () =>{
     console.log('Disconnected')

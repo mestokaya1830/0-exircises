@@ -25,17 +25,17 @@
     })
     function newUser() {
       const user = document.getElementById('user').value
-      socket.emit('newuser', user)
+      socket.emit('newuser-client', user)
     }
-    socket.on('newuser', (data) => {
+    socket.on('newuser-server', (data) => {
       document.getElementById('getuser').innerHTML = data
     })
 
     function sendMsg() {
       const msg = document.getElementById('msg').value
-      socket.emit('msg', msg)
+      socket.emit('msg-client', msg)
     }
-    socket.on('msg', (data) => {
+    socket.on('msg-server', (data) => {
       document.getElementById('getmsg').innerHTML += '<li>'+data+'</li>'
     })
     //handle connection status

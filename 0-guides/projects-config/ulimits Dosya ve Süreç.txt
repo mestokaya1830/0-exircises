@@ -1,0 +1,38 @@
+ulimits (Dosya ve Süreç Sınırları) Ayarı
+Linux işletim sistemleri (Ubuntu, Debian vb.), güvenlik gerekçesiyle bir programın aynı anda açabileceği dosya sayısını ve işlem (thread) sayısını varsayılan olarak çok düşük tutar (Genellikle limit 1024'tür).
+
+Bizim bahis sitesinde PM2 cluster'ları üzerinden MongoDB'ye 800 bağlantı açacağımızı ve WiredTiger'ın binlerce veriyi RAM'de/Diskte işleyeceğini konuşmuştuk. Eğer Linux'un bu limitlerini artırmazsan, çok yoğun bir anda MongoDB "Too many open files" (Çok fazla açık dosya var) hatası verir ve çöker.
+
+Ne Yapılması Gerekiyor?
+MongoDB'yi kurduğun VPS sunucularında, Linux'un /etc/security/limits.conf dosyasına girilerek MongoDB kullanıcısı için limitler şu şekilde yükseltilir (veya MongoDB servis ayarlarından bu otomatik yapılır):
+
+Açık Dosya Limiti (nofile): En az 64000
+
+İşlem Parçacığı Limiti (nproc): En az 64000
+
+Özetle: WiredTiger kodlama ve kurulum tarafında tamamen hazır ve açık gelir, senin ekstra bir şey yapmana gerek yoktur. Sadece sunucuyu kiraladığında işletim sisteminin (Linux) kapılarını MongoDB için sonuna kadar açman yeterlidir.
+
+
+👉 sudo nano /etc/security/limits.conf
+Ayarları Dosyanın En Altına Ekleyin
+mongod            soft    nofile          64000
+mongod            hard    nofile          64000
+mongod            soft    nproc           64000
+mongod            hard    nproc           64000
+
+
+👉 sudo nano /lib/systemd/system/mongod.service
+[Service]
+LimitFSIZE=infinity
+LimitCPU=infinity
+LimitAS=infinity
+LimitNOFILE=64000
+LimitNPROC=64000
+
+# Sistem servis yöneticisini yenile
+sudo systemctl daemon-reload
+
+# MongoDB'yi yeniden başlat
+sudo systemctl restart mongod
+
+mongosh --eval "db.adminCommand( { getCmdLineOpts: 1 } )"
