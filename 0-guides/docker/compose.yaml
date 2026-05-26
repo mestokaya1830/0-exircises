@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    init: true
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    
+    
+    
+👉 docker compose
+docker compose up
+docker compose down

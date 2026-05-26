@@ -1,9 +1,33 @@
-//in Dockerfile
+👉 Create Dockerfile put in 
 FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
+# production bağımlılıklarını temiz ve hızlı şekilde kurar
+# npm ci = package-lock.json'a birebir uygun kurulum yapar
+# --only=production = devDependencies kurmaz
 COPY . .
+# Projedeki tüm dosyaları container içine kopyalar
 EXPOSE 3000
 ENV PORT=3000
 CMD ["node", "src/index.js"]
+
+
+👉️CREATE IMAGE AND CONTAINER
+docker build -t test .
+docker run -p 4000:4000 test
+
+
+
+👉️REMOVE IMAGE AND CONTAINER
+docker ps -a	
+docker ps
+docker kill containerid
+docker rm -f containerid
+
+
+👉 Share images
+docker save -o test.tar test
+and send to your frend and your frend must use this code 
+docker load -i test.tar
+run docker -p 4000:4000 test

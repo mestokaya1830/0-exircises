@@ -1,0 +1,10 @@
+👉 when you connat remove container
+docker rm -f $(docker ps -aq) //remove all containers
+docker system prune -a -f //clear all conatiner images networkd and cache
+reset docker
+sudo systemctl stop docker.socket docker.service containerd
+sudo rm -rf /var/lib/docker/containers/*
+sudo rm -rf /var/lib/containerd/*
+sudo systemctl start containerd
+sudo systemctl start docker
+

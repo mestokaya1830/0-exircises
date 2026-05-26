@@ -6,7 +6,7 @@ http://localhost:9090/api/v1/targets
 
 👉 go to garafana 
 install garafana on linux go to garafana web site
-sudo apt-get install prometheus-node-exporter -y //hazir dashboard icin
+sudo apt-get install prometheus-node-exporter -y
 sudo systemctl start prometheus-node-exporter
 sudo systemctl enable prometheus-node-exporter
 
