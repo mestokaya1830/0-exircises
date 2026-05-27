@@ -1,0 +1,42 @@
+<table border="1" style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; text-align: left;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th style="padding: 12px; border: 1px solid #ddd;">Kriter</th>
+            <th style="padding: 12px; border: 1px solid #ddd; color: #439a45;">MongoDB (Standalone)</th>
+            <th style="padding: 12px; border: 1px solid #ddd; color: #00758f;">MySQL (Tekil Sunucu)</th>
+            <th style="padding: 12px; border: 1px solid #ddd; color: #336791;">PostgreSQL (Tekil Sunucu)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">Sadece Okuma (RPS)</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">~3.500 - 5.000+</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">~2.000 - 3.000</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">~2.500 - 3.500</td>
+        </tr>
+        <tr style="background-color: #f9f9f9;">
+            <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">Karma (Read/Write RPS)</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">~800 - 1.500</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">~400 - 800</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">~500 - 1.000</td>
+        </tr>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">Depolama Alanı Tüketimi</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Daha Yüksek (Büyük Veri / BSON)</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Daha Düşük (Sıkıştırılmış / InnoDB)</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Orta (MVCC yapısı nedeniyle şişme yapabilir)</td>
+        </tr>
+        <tr style="background-color: #f9f9f9;">
+            <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">Büyük Veride Davranış</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">RAM biterse diske düşer ve yavaşlar.</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Karmaşık JOIN'lerde CPU'yu kilitler.</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Ağır sorgularda kararlıdır ama concurrency arttıkça RAM yönetimi zorlaşır.</td>
+        </tr>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">En Güçlü Olduğu Alan</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Yüksek yazma hızı ve esnek şema (JSON)</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Kolay kurulum, standart ilişkisel yapılar</td>
+            <td style="padding: 12px; border: 1px solid #ddd;">Karmaşık sorgular, veri tutarlılığı, indeks çeşitliliği</td>
+        </tr>
+    </tbody>
+</table>

@@ -1,16 +1,17 @@
 {
   "name": "1-http-static-server",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1"
   }
 }

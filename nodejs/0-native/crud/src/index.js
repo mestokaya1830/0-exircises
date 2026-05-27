@@ -1,6 +1,6 @@
 import http from 'http'
 import fs from 'fs'
-import person from './person.json' assert { type: "json" }
+import person from '../person.json' assert { type: "json" }
 import url from 'url'
 
 const server = http.createServer((req, res) => {
