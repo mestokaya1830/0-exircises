@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kurye Takip Sistemi Ölçeklendirme Kartı</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #070a13; color: #e2e8f0; padding: 30px; margin: 0; }
+        .card { background-color: #0f172a; border-radius: 12px; padding: 30px; max-width: 900px; margin: 0 auto; border: 1px solid #1e293b; }
+        h1 { color: #3b82f6; text-align: center; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #1e293b; padding-bottom: 15px; }
+        h2 { color: #f59e0b; margin-top: 25px; border-left: 4px solid #3b82f6; padding-left: 10px; font-size: 18px;}
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #070a13; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #1e293b; font-size: 14px; }
+        th { background-color: #3b82f6; color: white; text-transform: uppercase; font-size: 12px; }
+        .metric { font-weight: bold; color: #f59e0b; }
+        .hardware { font-weight: bold; color: #ec4899; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>🛵 KURYE TAKİP SİTEMİ ÖLÇEKLENDİRME RAPORU 🛵</h1>
+    <p style="text-align:center; color:#64748b;"><b>Karakteristik:</b> Yoğun Sürekli Akış (Streaming Data) & Coğrafi Konum (Geospatial) Sorguları</p>
+
+    <h2>1. Proje Büyüklüğü & Kullanıcı Ölçeği</h2>
+    <table>
+        <tr><th>Metrik</th><th>Hedeflenen Kapasite</th></tr>
+        <tr><td>Sistemdeki Aktif Kurye Sayısı</td><td class="metric">10.000 Aktif Kurye (Sokakta Canlı)</td></tr>
+        <tr><td>Siparişi Canlı İzleyen Müşteri</td><td class="metric">20.000 Eşzamanlı Müşteri</td></tr>
+        <tr><td>Sinyal Sıklığı (GPS Ping Frequency)</td><td class="metric">Kurye başına her 3 saniyede 1 sinyal</td></tr>
+    </table>
+
+    <h2>2. Trafik ve İşlem (RPS) Yükü</h2>
+    <table>
+        <tr><th>İşlem Tipi</th><th>Saniyedeki İstek Sayısı (RPS)</th><th>Veri Tabanı / Ağ Etkisi</th></tr>
+        <tr><td><b>Kurye Konum Güncelleme (Write)</b></td><td><span style="color:#f59e0b; font-weight:bold;">3.333 RPS (Sürekli)</span></td><td>Veri tabanını yormamak için doğrudan WebSocket üzerinden Redis GEO'ya basılır.</td></tr>
+        <tr><td><b>Müşteri Canlı İzleme (WebSocket Read)</b></td><td>6.666 RPS Dağıtımı</td><td>Veri tabanına hiç dokunmadan Redis'ten WebSocket odalarına (Room) yayınlanır.</td></tr>
+        <tr><td><b>En Yakın Kuryeyi Bulma (Geo-Query)</b></td><td>50 - 100 Ağır Sorgu / sn</td><td>Restoran çevresindeki `2dsphere` koordinat alanı MongoDB üzerinde taranır.</td></tr>
+    </table>
+
+    <h2>3. Garantili Donanım İhtiyacı (Sistem Mimarisi)</h2>
+    <table>
+        <thead>
+            <tr><th>Sunucu Adeti / Rolü</th><th>İşlemci (CPU)</th><th>Bellek (RAM)</th><th>Disk ve Altyapı Notu</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><b>2x Node.js WebSocket Sunucu</b></td><td>4 Çekirdek (Her biri)</td><td>8 GB (Her biri)</td><td>Binlerce açık soket bağlantısını (Keep-Alive) hafızada tutar.</td></tr>
+            <tr><td><b>1x Redis Geo Cluster Sunucu</b></td><td>4 Çekirdek</td><td><span class="hardware">16 GB</span></td><td><b>Kritik Sınır.</b> Konum hesaplamaları tamamen RAM üzerinde döner.</td></tr>
+            <tr><td><b>3x MongoDB Replica Set (1P + 2S)</b></td><td>4 Çekirdek (Her biri)</td><td>16 GB (Her biri)</td><td>Konum akışından kurtarılmıştır; sadece geçmiş rota geçmişi ve sipariş ana datalarını tutar.</td></tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

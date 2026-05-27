@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fintek Borsası Ölçeklendirme ve Donanım Kartı</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #060814; color: #d1d5db; padding: 30px; margin: 0; }
+        .card { background-color: #111322; border-radius: 12px; padding: 30px; max-width: 900px; margin: 0 auto; border: 1px solid #1f233a; }
+        h1 { color: #eab308; text-align: center; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #1f233a; padding-bottom: 15px; }
+        h2 { color: #22c55e; margin-top: 25px; border-left: 4px solid #eab308; padding-left: 10px; font-size: 18px;}
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #060814; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #111322; font-size: 14px; }
+        th { background-color: #eab308; color: #060814; text-transform: uppercase; font-size: 12px; font-weight: bold; }
+        .metric { font-weight: bold; color: #eab308; }
+        .hardware { font-weight: bold; color: #ef4444; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>💰 FİNTEK BORSASI ÖLÇEKLENDİRME RAPORU 💰</h1>
+    <p style="text-align:center; color:#4b5563;"><b>Karakteristik:</b> %100 Veri Tutarlılığı (ACID Transactions), Ultra Düşük Gecikme (Micro-seconds)</p>
+
+    <h2>1. Proje Büyüklüğü & Kullanıcı Ölçeği</h2>
+    <table>
+        <tr><th>Metrik</th><th>Hedeflenen Kapasite</th></tr>
+        <tr><td>Toplam Kayıtlı Cüzdan Sayısı</td><td class="metric">500.000 Kullanıcı</td></tr>
+        <tr><td>Pik Anı Anlık Alım/Satım Emri (Order Volume)</td><td class="metric">Saniyede 5.000 Finansal Emir</td></tr>
+        <tr><td>Veri Güvencesi</td><td class="metric">%100 Log-backed (Hiçbir kuruş kaybolamaz)</td></tr>
+    </table>
+
+    <h2>2. Trafik ve İşlem (RPS) Yükü</h2>
+    <table>
+        <tr><th>İşlem Tipi</th><th>Saniyedeki İstek Sayısı (RPS)</th><th>Veri Tabanı / Bellek Etkisi</th></tr>
+        <tr><td><b>Fiyat Grafiği & Tahta İzleme (Read)</b></td><td>15.000+ RPS</td><td>Veri tabanına hiç dokunmaz. Tamamı WebSocket üzerinden ham bellekten (In-Memory Broadcast) basılır.</td></tr>
+        <tr><td><b>Alım/Satım İşlemleri (Write)</b></td><td><span style="color:#22c55e; font-weight:bold;">5.000 RPS</span></td><td>Emirler önce Redis tavanına çarpar, ardından MongoDB'de iki kullanıcının bakiyesini kilitleyerek (Session Transaction) günceller.</td></tr>
+    </table>
+
+    <h2>3. Garantili Donanım İhtiyacı (Sistem Mimarisi)</h2>
+    <table>
+        <thead>
+            <tr><th>Sunucu Adeti / Rolü</th><th>İşlemci (CPU)</th><th>Bellek (RAM)</th><th>Disk ve Altyapı Notu</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><b>2x Node.js Eşleştirme Motoru</b></td><td>8 Çekirdek (Her biri)</td><td>16 GB (Her biri)</td><td>Emirleri eşleştirmek için ham CPU gücü ve Single-Thread optimizasyonu.</td></tr>
+            <tr><td><b>1x Redis Ledger Sunucusu</b></td><td>4 Çekirdek</td><td>16 GB</td><td>Anlık bakiye kilitlerini ve emir kuyruklarını saniyenin binde birinde yönetir.</td></tr>
+            <tr><td><b>1x MongoDB Primary (Finansal Kayıt)</b></td><td>8 Çekirdek</td><td><span class="hardware">64 GB</span></td><td><span class="hardware">Ultra Hızlı Enterprise NVMe SSD</span>. WiredTiger önbelleği maksimumda tutulmalıdır.</td></tr>
+            <tr><td><b>2x MongoDB Secondary (Yedek & Rapor)</b></td><td>4 Çekirdek (Her biri)</td><td>32 GB (Her biri)</td><td>Finansal denetimler ve kullanıcıların geçmiş hesap dökümleri için yedekler.</td></tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

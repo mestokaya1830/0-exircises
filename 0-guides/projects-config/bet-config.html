@@ -2,112 +2,51 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Bahis Sitesi Altyapı Mimarisi</title>
+    <title>Bahis Sitesi Ölçeklendirme ve Donanım Kartı</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 30px; margin: 0; }
-        .card { background-color: #1e293b; border-radius: 12px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); max-width: 900px; margin: 0 auto; border: 1px solid #334155; }
-        h1 { color: #38bdf8; text-align: center; margin-top: 0; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #334155; padding-bottom: 15px; }
-        h2 { color: #fbbf24; margin-top: 30px; border-left: 4px solid #fbbf24; padding-left: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #0f172a; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #1e293b; }
-        th { background-color: #0284c7; color: white; text-transform: uppercase; font-size: 13px; }
-        tr:hover { background-color: #1e293b; }
-        pre { background-color: #0f172a; padding: 20px; border-radius: 8px; border: 1px solid #334155; overflow-x: auto; color: #34d399; font-size: 13px; }
-        .footer { text-align: center; margin-top: 30px; color: #64748b; font-size: 12px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0f172a; color: #f8fafc; padding: 30px; margin: 0; }
+        .card { background-color: #1e293b; border-radius: 12px; padding: 30px; max-width: 900px; margin: 0 auto; border: 1px solid #334155; }
+        h1 { color: #f43f5e; text-align: center; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #334155; padding-bottom: 15px; }
+        h2 { color: #fbbf24; margin-top: 25px; border-left: 4px solid #f43f5e; padding-left: 10px; font-size: 18px;}
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #0f172a; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #1e293b; font-size: 14px; }
+        th { background-color: #f43f5e; color: white; text-transform: uppercase; font-size: 12px; }
+        .metric { font-weight: bold; color: #38bdf8; }
+        .hardware { font-weight: bold; color: #34d399; }
     </style>
 </head>
 <body>
-
 <div class="card">
-    <h1>🎰 BAHİS SİTESİ YÜKSEK PERFORMANS MİMARİSİ 🎰</h1>
+    <h1>🎰 BAHİS SİTESİ ÖLÇEKLENDİRME RAPORU 🎰</h1>
+    <p style="text-align:center; color:#94a3b8;"><b>Karakteristik:</b> Yüksek Eşzamanlı Yazma (High Concurrent Write) & Düşük Gecikme</p>
 
-    <h2>1. Node.js (Uygulama Katmanı) Sunucuları</h2>
+    <h2>1. Proje Büyüklüğü & Kullanıcı Ölçeği</h2>
     <table>
-        <thead>
-            <tr>
-                <th>Sunucu Adı</th>
-                <th>Adet</th>
-                <th>CPU (İşlemci)</th>
-                <th>RAM (Bellek)</th>
-                <th>Çalışma Modu / Görevi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><b>Node.js VPS - 1</b></td>
-                <td>1</td>
-                <td>4 Çekirdek</td>
-                <td>8 GB</td>
-                <td>PM2 Cluster Modu (4 Farklı Node.js Kopyası)</td>
-            </tr>
-            <tr>
-                <td><b>Node.js VPS - 2</b></td>
-                <td>1</td>
-                <td>4 Çekirdek</td>
-                <td>8 GB</td>
-                <td>PM2 Cluster Modu (4 Farklı Node.js Kopyası)</td>
-            </tr>
-        </tbody>
+        <tr><th>Metrik</th><th>Hedeflenen Kapasite</th></tr>
+        <tr><td>Toplam Kayıtlı Kullanıcı</td><td class="metric">1.000.000 Kullanıcı</td></tr>
+        <tr><td>Eşzamanlı Aktif Kullanıcı (Anlık Sitede Olan)</td><td class="metric">50.000 Canlı Kullanıcı</td></tr>
+        <tr><td>Pik Anı (Derbi Maçı Sırasındaki Yük)</td><td class="metric">Saniyede 2.000 - 3.000 Kupon Yatırma İsteyi</td></tr>
     </table>
 
-    <h2>2. MongoDB (Veri Tabanı Katmanı) Sunucuları</h2>
+    <h2>2. Trafik ve İşlem (RPS) Yükü</h2>
     <table>
-        <thead>
-            <tr>
-                <th>Sunucu Adı</th>
-                <th>Rolü</th>
-                <th>CPU</th>
-                <th>RAM</th>
-                <th>Disk Tipi</th>
-                <th>Görevi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><b>MongoDB VPS - 1</b></td>
-                <td><span style="color:#ef4444; font-weight:bold;">Primary</span></td>
-                <td>4 Çekirdek</td>
-                <td>16 GB</td>
-                <td>NVMe SSD</td>
-                <td>Tüm kupon yazma ve bakiye düşüm işlemlerini göğüsler.</td>
-            </tr>
-            <tr>
-                <td><b>MongoDB VPS - 2</b></td>
-                <td><span style="color:#3b82f6; font-weight:bold;">Secondary</span></td>
-                <td>4 Çekirdek</td>
-                <td>16 GB</td>
-                <td>NVMe SSD</td>
-                <td>Anlık replikasyon yapar. Okuma (Read) yükünü sırtlar.</td>
-            </tr>
-            <tr>
-                <td><b>MongoDB VPS - 3</b></td>
-                <td><span style="color:#10b981; font-weight:bold;">Arbiter</span></td>
-                <td>1 Çekirdek</td>
-                <td>2 GB</td>
-                <td>Standart</td>
-                <td>Veri tutmaz. Çökme anında yeni lideri seçmek için oy kullanır.</td>
-            </tr>
-        </tbody>
+        <tr><th>İşlem Tipi</th><th>Saniyedeki İstek Sayısı (RPS)</th><th>Veri Tabanı Etkisi</th></tr>
+        <tr><td><b>Oran Okuma (Read)</b></td><td>5.000 - 10.000 RPS</td><td>Secondary replikalardan RAM önbelleği (WiredTiger) ile döner.</td></tr>
+        <tr><td><b>Kupon Yazma / Bakiye Düşme (Write)</b></td><td><span style="color:#ef4444; font-weight:bold;">2.000 - 3.000 RPS</span></td><td>Primary sunucuda ACID Transaction kilitlemesi oluşturur.</td></tr>
     </table>
 
-    <h2>3. Mongoose Production Konfigürasyonu</h2>
-    <pre>
-const mongooseOptions = {
-  maxPoolSize: 100,             // PM2 Cluster başına 100 bağlantı (Toplamda 800 şerit)
-  minPoolSize: 10,              // Her an hazırda bekleyecek minimum bağlantı sayısı
-  connectTimeoutMS: 10000,      // İlk bağlantı için 10 saniye zaman aşımı
-  socketTimeoutMS: 5000,        // Yanıt vermeyen sorgular için 5 saniye zaman aşımı
-  keepAlive: true,              // Bağlantıyı işletim sistemi seviyesinde canlı tut
-  keepAliveInitialDelay: 300000,// 5 dakikada bir arka planda ping at
-  w: 'majority',                // Yazma güvencesi (Veri hem ana hem yedeğe yazılmalı)
-  wtimeoutMS: 2000,             // Replikasyon onayı için maksimum 2 saniye bekle
-  readPreference: 'secondaryPreferred' // Okuma isteklerini otomatik olarak yedek sunucuya yönlendir
-};</pre>
-
-    <div class="footer">
-        Yüksek Eşzamanlı Yazma (High Concurrent Write) Odaklı Mimari Kartı
-    </div>
+    <h2>3. Garantili Donanım İhtiyacı (Sistem Mimarisi)</h2>
+    <table>
+        <thead>
+            <tr><th>Sunucu Adeti / Rolü</th><th>İşlemci (CPU)</th><th>Bellek (RAM)</th><th>Disk ve Altyapı Notu</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><b>2x Node.js Web Sunucu</b></td><td>4 Çekirdek (Her biri)</td><td>8 GB (Her biri)</td><td>PM2 Cluster Mod (Toplam 8 Çekirdek aktif iş yükü).</td></tr>
+            <tr><td><b>1x MongoDB Primary (Yazma)</b></td><td>4 Çekirdek</td><td>16 GB</td><td><span class="hardware">Kesinlikle NVMe SSD</span> (Disk darboğazını önlemek için).</td></tr>
+            <tr><td><b>1x MongoDB Secondary (Okuma)</b></td><td>4 Çekirdek</td><td>16 GB</td><td><span class="hardware">Kesinlikle NVMe SSD</span> (İndekslerin tamamı RAM'de durmalı).</td></tr>
+            <tr><td><b>1x MongoDB Arbiter (Seçici)</b></td><td>1 Çekirdek</td><td>2 GB</td><td>Standart Disk (Veri tutmaz, sadece oy kullanır).</td></tr>
+        </tbody>
+    </table>
 </div>
-
 </body>
 </html>

@@ -2,97 +2,51 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>E-Ticaret Yüksek Performans Mimarisi</title>
+    <title>E-Ticaret Ölçeklendirme ve Donanım Kartı</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0f19; color: #f1f5f9; padding: 30px; margin: 0; }
-        .card { background-color: #111827; border-radius: 16px; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); max-width: 950px; margin: 0 auto; border: 1px solid #1f2937; }
-        h1 { color: #22c55e; text-align: center; margin-top: 0; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #1f2937; padding-bottom: 15px; font-size: 26px; }
-        h2 { color: #38bdf8; margin-top: 35px; border-left: 4px solid #38bdf8; padding-left: 12px; font-size: 18px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #0b0f19; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #111827; font-size: 14px; }
-        th { background-color: #10b981; color: white; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
-        tr:hover { background-color: #1f2937; }
-        .highlight-write { color: #f43f5e; font-weight: bold; }
-        .highlight-read { color: #3b82f6; font-weight: bold; }
-        .highlight-redis { color: #a855f7; font-weight: bold; }
-        .info-box { background-color: #1e1b4b; border-left: 4px solid #6366f1; padding: 15px; border-radius: 4px; margin-top: 15px; font-size: 14px; line-height: 1.6; }
-        .footer { text-align: center; margin-top: 35px; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0b0f19; color: #f1f5f9; padding: 30px; margin: 0; }
+        .card { background-color: #111827; border-radius: 12px; padding: 30px; max-width: 900px; margin: 0 auto; border: 1px solid #1f2937; }
+        h1 { color: #10b981; text-align: center; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #1f2937; padding-bottom: 15px; }
+        h2 { color: #38bdf8; margin-top: 25px; border-left: 4px solid #10b981; padding-left: 10px; font-size: 18px;}
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #0b0f19; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #111827; font-size: 14px; }
+        th { background-color: #10b981; color: white; text-transform: uppercase; font-size: 12px; }
+        .metric { font-weight: bold; color: #38bdf8; }
+        .hardware { font-weight: bold; color: #a855f7; }
     </style>
 </head>
 <body>
-
 <div class="card">
-    <h1>🛍️ E-TİCARET YÜKSEK PERFORMANS MİMARİSİ 🛍️</h1>
+    <h1>🛍️ E-TİCARET ÖLÇEKLENDİRME RAPORU 🛍️</h1>
+    <p style="text-align:center; color:#6b7280;"><b>Karakteristik:</b> Devasa Veri Hacmi & Yüksek Okuma (High Read - Filtreleme / Arama) Yükü</p>
 
-    <div class="info-box">
-        <b>Mimari Karakteristik:</b> E-ticaret sistemleri <b>"Yüksek Okuma (High Read)"</b> odaklıdır (Okuma/Yazma oranı ~20:1). Milyonlarca ürünün anlık filtrelenmesi ve Black Friday gibi kampanya patlamaları için <b>Redis Önbellek (Cache)</b> katmanı ve <b>MongoDB Okuma Dağıtımı</b> hayati önem taşır.
-    </div>
-
-    <h2>1. Node.js & Redis (Uygulama ve Önbellek Katmanı)</h2>
+    <h2>1. Proje Büyüklüğü & Kullanıcı Ölçeği</h2>
     <table>
-        <thead>
-            <tr>
-                <th>Sunucu Tipi</th>
-                <th>Adet</th>
-                <th>CPU (İşlemci)</th>
-                <th>RAM (Bellek)</th>
-                <th>Sistemdeki Kritik Görevi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><b>Node.js Web Sunucu</b></td>
-                <td>3</td>
-                <td>4 Çekirdek</td>
-                <td>8 GB</td>
-                <td>PM2 Cluster Modu ile çalışır. Sepet mantığını ve sepet-stok doğrulamalarını yönetir.</td>
-            </tr>
-            <tr>
-                <td><b class="highlight-redis">Redis Cache Sunucu</b></td>
-                <td>1</td>
-                <td>2 Çekirdek</td>
-                <td>8 GB</td>
-                <td>En çok bakılan ürün detaylarını, kategori ağaçlarını ve aktif sepetleri RAM'de tutarak MongoDB'yi rahatlatır.</td>
-            </tr>
-        </tbody>
+        <tr><th>Metrik</th><th>Hedeflenen Kapasite</th></tr>
+        <tr><td>Toplam Ürün Sayısı (Katalog Verisi)</td><td class="metric">500.000+ Ürün (Varyasyonları ile birlikte)</td></tr>
+        <tr><td>Aylık Sayfa Görüntüleme (Page View)</td><td class="metric">10.000.000 Görüntüleme</td></tr>
+        <tr><td>Pik Anı (Black Friday / Büyük İndirim Gecesi)</td><td class="metric">Saniyede 2.000 Eşzamanlı İstek (RPS)</td></tr>
     </table>
 
-    <h2>2. MongoDB (Veri Tabanı Katmanı - Replica Set)</h2>
+    <h2>2. Trafik ve İşlem (RPS) Yükü</h2>
     <table>
-        <thead>
-            <tr>
-                <th>Sunucu Rolü</th>
-                <th>CPU</th>
-                <th>RAM</th>
-                <th>Disk Tipi</th>
-                <th>E-Ticaret Yük Dağılım Stratejisi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><span class="highlight-write">Primary (Ana)</span></td>
-                <td>4 Çekirdek</td>
-                <td>16 GB</td>
-                <td>NVMe SSD</td>
-                <td>Sadece sipariş alma, ödeme kaydı, kullanıcı üyelik ve stok düşme (<span class="highlight-write">Write</span>) işlemlerine odaklanır.</td>
-            </tr>
-            <tr>
-                <td><span class="highlight-read">Secondary - 1 (Yedek)</span></td>
-                <td>4 Çekirdek</td>
-                <td>16 GB</td>
-                <td>NVMe SSD</td>
-                <td>Katalog arama, marka/renk/beden filtreleme ve ürün listeleme (<span class="highlight-read">Read</span>) yükünü tamamen sırtlar.</td>
-            </tr>
-            <tr>
-                <td><span class="highlight-read">Secondary - 2 (Yedek)</span></td>
-                <td>4 Çekirdek</td>
-                <td>16 GB</td>
-                <td>NVMe SSD</td>
-                <td>Hem veri yedekliliğini çiftler hem de gece çalışan fatura, raporlama ve muhasebe sorgularını karşılar.</td>
-            </tr>
-        </tbody>
+        <tr><th>İşlem Tipi</th><th>Saniyedeki İstek Sayısı (RPS)</th><th>Veri Tabanı Etkisi</th></tr>
+        <tr><td><b>Ürün Arama, Detay & Filtreleme (Read)</b></td><td><span style="color:#3b82f6; font-weight:bold;">1.800 - 1.900 RPS</span></td><td>%90'ı Redis Cache'den döner, kalanı MongoDB Secondary'leri zorlar.</td></tr>
+        <tr><td><b>Sipariş Geçme & Sepet Güncelleme (Write)</b></td><td>100 - 200 RPS</td><td>MongoDB Primary sunucuya yazılır. Kritik stok kontrolleri yapılır.</td></tr>
     </table>
 
-    <h2>3. Mongoose E-Ticaret Optimize Konfigürasyon Örneği</h2>
-    <div style="background-color: #0b0f19; padding: 20px; border-radius: 8px; border: 1px solid #1f2937; margin-top: 15px;">
-        <code style="color: #3
+    <h2>3. Garantili Donanım İhtiyacı (Sistem Mimarisi)</h2>
+    <table>
+        <thead>
+            <tr><th>Sunucu Adeti / Rolü</th><th>İşlemci (CPU)</th><th>Bellek (RAM)</th><th>Disk ve Altyapı Notu</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><b>3x Node.js Web Sunucu</b></td><td>4 Çekirdek (Her biri)</td><td>8 GB (Her biri)</td><td>Ağır ürün kartı birleştirmeleri ve sepet mantığı için 3 sunucu.</td></tr>
+            <tr><td><b>1x Redis Cache Sunucu</b></td><td>2 Çekirdek</td><td><span class="hardware">8 GB</span></td><td>Tamamen RAM odaklı. Katalog ve kategori ağaçlarını saklar.</td></tr>
+            <tr><td><b>1x MongoDB Primary (Yazma)</b></td><td>4 Çekirdek</td><td>16 GB</td><td>Sadece siparişler ve üyelik veri yazımı için kullanılır.</td></tr>
+            <tr><td><b>2x MongoDB Secondary (Okuma)</b></td><td>4 Çekirdek (Her biri)</td><td>16 GB (Her biri)</td><td>Ağır kategori filtreleme ve `aggregate` sorguları için 2 adet yedek.</td></tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

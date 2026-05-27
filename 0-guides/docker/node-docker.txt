@@ -3,11 +3,7 @@ FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
-# production bağımlılıklarını temiz ve hızlı şekilde kurar
-# npm ci = package-lock.json'a birebir uygun kurulum yapar
-# --only=production = devDependencies kurmaz
 COPY . .
-# Projedeki tüm dosyaları container içine kopyalar
 EXPOSE 3000
 ENV PORT=3000
 CMD ["node", "src/index.js"]

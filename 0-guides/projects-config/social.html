@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sosyal Medya Ölçeklendirme ve Donanım Kartı</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0b0f17; color: #e2e8f0; padding: 30px; margin: 0; }
+        .card { background-color: #1e1e2e; border-radius: 12px; padding: 30px; max-width: 900px; margin: 0 auto; border: 1px solid #2d2d3d; }
+        h1 { color: #ff007f; text-align: center; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #2d2d3d; padding-bottom: 15px; }
+        h2 { color: #a07cf8; margin-top: 25px; border-left: 4px solid #ff007f; padding-left: 10px; font-size: 18px;}
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #0b0f17; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #1e1e2e; font-size: 14px; }
+        th { background-color: #ff007f; color: white; text-transform: uppercase; font-size: 12px; }
+        .metric { font-weight: bold; color: #a07cf8; }
+        .hardware { font-weight: bold; color: #00f5ff; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>📱 SOSYAL MEDYA ÖLÇEKLENDİRME RAPORU 📱</h1>
+    <p style="text-align:center; color:#64748b;"><b>Karakteristik:</b> İlişkisel Dağıtım (Fan-out on Write/Read), Graf Veri Yapıları & Ağır Medya Trafiği</p>
+
+    <h2>1. Proje Büyüklüğü & Kullanıcı Ölçeği</h2>
+    <table>
+        <tr><th>Metrik</th><th>Hedeflenen Kapasite</th></tr>
+        <tr><td>Toplam Kayıtlı Kullanıcı</td><td class="metric">5.000.000 Kullanıcı</td></tr>
+        <tr><td>Günlük Aktif Kullanıcı (DAU)</td><td class="metric">500.000 Aktif Kullanıcı</td></tr>
+        <tr><td>Anlık Akış Yenileme (Timeline Saniyede)</td><td class="metric">Saniyede 4.000 İstek (RPS)</td></tr>
+    </table>
+
+    <h2>2. Trafik ve İşlem (RPS) Yükü</h2>
+    <table>
+        <tr><th>İşlem Tipi</th><th>Saniyedeki İstek Sayısı (RPS)</th><th>Veri Tabanı / Mimari Etkisi</th></tr>
+        <tr><td><b>Ana Sayfa Akışı Yenileme (Read)</b></td><td><span style="color:#a07cf8; font-weight:bold;">4.000 RPS</span></td><td>Kullanıcının takip ettiği kişilerin postları Redis'te önceden hazırlanmış (Pre-built Feed) olarak bekler.</td></tr>
+        <tr><td><b>Post Atma, Beğeni, Yorum (Write)</b></td><td>500 RPS</td><td>MongoDB Primary sunucusuna yazılır. Popüler hesapların postları arka planda "Queue (Kuyruk)" sistemine alınarak dağıtılır.</td></tr>
+    </table>
+
+    <h2>3. Garantili Donanım İhtiyacı (Sistem Mimarisi)</h2>
+    <table>
+        <thead>
+            <tr><th>Sunucu Adeti / Rolü</th><th>İşlemci (CPU)</th><th>Bellek (RAM)</th><th>Disk ve Altyapı Notu</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><b>4x Node.js Web & API Sunucu</b></td><td>4 Çekirdek (Her biri)</td><td>8 GB (Her biri)</td><td>Ana sayfa akış algoritmasını (Feed Generation) hesaplamak için yüksek işlemci gücü.</td></tr>
+            <tr><td><b>1x Redis Cluster (Timeline Cache)</b></td><td>4 Çekirdek</td><td><span class="hardware">32 GB</span></td><td><b>Çok Kritik.</b> Her aktif kullanıcının ana sayfası hazır olarak RAM'de saklanır.</td></tr>
+            <tr><td><b>1x MongoDB Primary (Yazma)</b></td><td>8 Çekirdek</td><td>32 GB</td><td>NVMe SSD. Postlar, yorumlar ve beğeniler buraya akar.</td></tr>
+            <tr><td><b>2x MongoDB Secondary (Okuma)</b></td><td>4 Çekirdek (Her biri)</td><td>16 GB (Her biri)</td><td>Profil görüntülemeleri ve geçmiş post aramaları için yük paylaşımı.</td></tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
