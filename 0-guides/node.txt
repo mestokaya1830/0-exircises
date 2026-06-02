@@ -6,5 +6,4 @@ sudo pkill node
 sudo netstat -ntlp
 sudo lsof -i :3000
 sudo kill -9 pid
-
 npm cache clean --force

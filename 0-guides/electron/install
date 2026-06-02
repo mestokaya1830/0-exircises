@@ -1,0 +1,34 @@
+🚀 npm create @quick-start/electron@latest
+Electron projesini hazır şablonla oluşturur
+Vite + Electron + Vue/React setup hazır gelir
+Boilerplate (çalışan başlangıç projesi) üretir
+
+🪵 npm install electron-log
+Electron içinde log sistemi sağlar
+Hata, bilgi ve warning loglarını dosyaya yazar
+Production debug ve crash takibi için kullanılır
+
+📦 npm install electron-builder --save-dev
+Uygulamayı production için paketler
+.exe / .dmg / AppImage üretir
+Installer ve dağıtım (distribution) oluşturur
+
+🔄 npm install electron-updater
+Uygulamaya otomatik update sistemi ekler
+Yeni versiyonları kontrol eder
+Kullanıcıya güncelleme indirir ve uygular
+
+🧠 npm install electron-is-dev
+App’in development mı production mı olduğunu belirler
+Dev ortamda localhost kullanmayı sağlar
+Prod ortamda build dosyasını açtırır
+
+🌐 npm install axios
+Backend’e HTTP istekleri yapar
+API çağrıları için kullanılır (GET, POST vs.)
+Login, invoice, veri sync işlemlerinde kullanılır
+
+🧩 npm install pinia
+Vue için state management sistemidir
+Global state yönetir (user, invoice, UI state)
+Vuex’in modern ve daha basit alternatifi
