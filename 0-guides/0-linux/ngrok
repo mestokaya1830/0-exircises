@@ -1,4 +1,0 @@
-open terminal
-ngrok http 3000
-then npm run dev run your prpject
-and then ngrok link and paste on the url

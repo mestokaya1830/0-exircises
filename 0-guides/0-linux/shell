@@ -1,4 +1,0 @@
-shell--------------------------------------------------
-cat /etc/shells  //avaiable shell apps
-exho $SHELL //current shell
-bash or dash  //switch shell mode

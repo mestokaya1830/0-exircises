@@ -32,3 +32,42 @@ Login, invoice, veri sync işlemlerinde kullanılır
 Vue için state management sistemidir
 Global state yönetir (user, invoice, UI state)
 Vuex’in modern ve daha basit alternatifi
+
+👉 main.index.js
+import { app, BrowserWindow } from 'electron'
+import { is } from '@electron-toolkit/utils'
+import path from 'path'
+
+let win = null
+function createWindow() {
+  win = new BrowserWindow({
+    width: 1700,
+    height: 1020,
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  })
+  win.once('ready-to-show', () => {
+    win.show()
+  })
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    win.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  } else {
+    win.loadFile(path.resolve(__dirname, '../renderer/index.html'))
+  }
+}
+
+app.whenReady().then(() => {
+  createWindow()
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+    }
+  })
+})
+
+
+
+

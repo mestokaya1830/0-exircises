@@ -1,4 +1,0 @@
-sudo apt install fail2ban
-sudo cp jail.conf jail.local
-sudo nano jail.local  //check config
-

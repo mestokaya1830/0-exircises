@@ -1,8 +1,0 @@
-mkdir cert
-cd cert
-open terminal
-sudo openssl genrsa -out key.pem
-sudo openssl req -new -key key.pem -out csr.pem
-
-asnwer questions and run this command
-sudo openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out cert.pem
