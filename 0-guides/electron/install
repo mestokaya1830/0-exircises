@@ -1,73 +1,115 @@
-🚀 npm create @quick-start/electron@latest
-Electron projesini hazır şablonla oluşturur
-Vite + Electron + Vue/React setup hazır gelir
-Boilerplate (çalışan başlangıç projesi) üretir
-
-🪵 npm install electron-log
-Electron içinde log sistemi sağlar
-Hata, bilgi ve warning loglarını dosyaya yazar
-Production debug ve crash takibi için kullanılır
-
-📦 npm install electron-builder --save-dev
-Uygulamayı production için paketler
-.exe / .dmg / AppImage üretir
-Installer ve dağıtım (distribution) oluşturur
-
-🔄 npm install electron-updater
-Uygulamaya otomatik update sistemi ekler
-Yeni versiyonları kontrol eder
-Kullanıcıya güncelleme indirir ve uygular
-
-🧠 npm install electron-is-dev
-App’in development mı production mı olduğunu belirler
-Dev ortamda localhost kullanmayı sağlar
-Prod ortamda build dosyasını açtırır
-
-🌐 npm install axios
-Backend’e HTTP istekleri yapar
-API çağrıları için kullanılır (GET, POST vs.)
-Login, invoice, veri sync işlemlerinde kullanılır
-
-🧩 npm install pinia
-Vue için state management sistemidir
-Global state yönetir (user, invoice, UI state)
-Vuex’in modern ve daha basit alternatifi
-
-👉 main.index.js
-import { app, BrowserWindow } from 'electron'
-import { is } from '@electron-toolkit/utils'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
+import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import icon from '../../resources/icon.png?asset'
+
+import auth from './ipc/auth.ipc.js'
+import customers from './ipc/customers.ipc.js'
+import invoices from './ipc/invoices.ipc.js'
+import dashboard from './ipc/dashboard.ipc.js'
+import orders from './ipc/orders.ipc.js'
+import offers from './ipc/offers.ipc.js'
+import payments from './ipc/payments.ipc.js'
+import reminders from './ipc/reminders.ipc.js'
+import reports from './ipc/reports.ipc.js'
 
 let win = null
 function createWindow() {
   win = new BrowserWindow({
-    width: 1700,
-    height: 1020,
-    show: false,
+    width: 1720, // Pencere genişliği
+    height: 1020, // Pencere yüksekliği
+
+    show: false, // Sayfa tamamen yüklenene kadar pencereyi gösterme
+    frame: false, // İşletim sisteminin başlık çubuğunu kaldır (özel tasarım için)
+    autoHideMenuBar: true, // Menü çubuğunu gizle
+
+    backgroundColor: '#ffffff', // Açılışta beyaz ekran göstererek siyah/beyaz flaşı azaltır
+
+    ...(process.platform === 'linux' ? { icon } : {}), // Linux'ta uygulama ikonu kullan
+
     webPreferences: {
+      preload: path.resolve(__dirname, '../preload/preload.js'),
+      // Renderer ile Main process arasında güvenli köprü
+
+      sandbox: true,
+      // Renderer'ı sandbox içinde çalıştırır
+      // Ek güvenlik katmanı sağlar
+
+      contextIsolation: true,
+      // Web sayfası ile preload script'ini birbirinden izole eder
+      // Güvenlik için önerilir
+
+      enableRemoteModule: false,
+      // Eski remote modülünü devre dışı bırakır
+      // Güvenlik nedeniyle kapalı tutulmalı
+
       nodeIntegration: false,
-      contextIsolation: true
+      // Renderer tarafında require(), fs, path gibi Node.js API'lerini kapatır
+      // Yetkiler preload üzerinden verilmelidir
+
+      webSecurity: true,
+      // Same-Origin Policy, CORS vb. tarayıcı güvenliklerini aktif tutar
+
+      devTools: is.dev
+      // Sadece geliştirme ortamında DevTools açılabilsin
     }
   })
+
+  // Pencere DOM + paint hazır olduğunda göster
   win.once('ready-to-show', () => {
     win.show()
+    win.setTitle('Mes Invoices App')
   })
+
+  win.webContents.setWindowOpenHandler((details) => {
+    shell.openExternal(details.url)
+    return { action: 'deny' }
+  })
+
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     win.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     win.loadFile(path.resolve(__dirname, '../renderer/index.html'))
   }
 }
-
 app.whenReady().then(() => {
+  electronApp.setAppUserModelId('com.electron')
+  app.on('browser-window-created', (event, window) => {
+    optimizer.watchWindowShortcuts(window)
+  })
+
   createWindow()
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
-    }
+  auth()
+  customers()
+  invoices()
+  dashboard()
+  orders()
+  offers()
+  payments()
+  reminders()
+  reports()
+
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit()
+})
 
-
-
+//window control
+ipcMain.handle('control-window', (event, data) => {
+  if (!win) return
+  switch (data) {
+    case 'minimize':
+      win.minimize()
+      break
+    // case 'maximize':
+    //   win.isMaximized() ? win.unmaximize() : win.maximize()
+    //   break
+    case 'close':
+      win.close()
+      break
+  }
+})

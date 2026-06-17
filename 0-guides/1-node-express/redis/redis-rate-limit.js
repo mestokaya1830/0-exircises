@@ -17,20 +17,20 @@ redisClient.defineCommand('checkLimit', {
 
 const rateLimiter = (limit, period, type) =>
   catchAsync(async (req, res, next) => {
-    const identifier = {
+    const ide = {
       ip: req.ip,
       user: req.user?._id || req.user,
       apikey: req.headers['x-api-key'],
       global: 'global'
     }[type]
 
-    if (!identifier) {
+    if (!ide) {
       return next(
-        new AppError('Invalid identifier', 401, 'INVALID_IDE')
+        new AppError('Invalid IDE', 401, 'INVALID_IDE')
       )
     }
 
-    const key = `rate-limit:${req.baseUrl}:${req.path}:${identifier}`
+    const key = `rate-limit:${req.baseUrl}:${req.path}:${ide[type]}`
 
     const count = await redisClient.checkLimit(key, period)
     const ttl = await redisClient.ttl(key)

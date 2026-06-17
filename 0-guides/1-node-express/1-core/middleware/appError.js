@@ -15,26 +15,28 @@ export default AppError
  
 index.js
 app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const isOperational = err.isOperational ?? false;
+  console.error(err) // for development mode
+  const statusCode = err.statusCode || 500
 
   logger.error({
-    message: err.message,
-    stack: err.stack,
     requestID: req.id,
+    ip: req.ip,
     url: req.originalUrl,
     method: req.method,
-    ip: req.ip,
     statusCode,
-    isOperational,
-  });
+    code: err.code,
+    message: err.message,
+    stack: err.stack,
+    timestamp: new Date().toISOString()
+  })
 
   res.status(statusCode).json({
     success: false,
     requestID: req.id,
-    message: isOperational ? err.message : "Server Error!",
-    ...(process.env.NODE_ENV === "development" && {
-      stack: err.stack,
-    }),
-  });
-});
+    code: err.code || 'INTERNAL_ERROR',
+    message: err.isOperational
+      ? err.message
+      : 'Internal Server Error',
+    err: err //for development
+  })
+})
