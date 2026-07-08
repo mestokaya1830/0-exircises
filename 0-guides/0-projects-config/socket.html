@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Full Core Cheatsheet</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 30px 15px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background: #2c3e50;
+            color: #fff;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        .section {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid #3498db;
+        }
+        .section:nth-child(3) { border-left-color: #2ecc71; }
+        .section:nth-child(4) { border-left-color: #e67e22; }
+        
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eef2f3;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f4f6f7;
+            color: #34495e;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        tr:hover {
+            background-color: #fdfdfd;
+        }
+        code {
+            background-color: #f8f9f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            color: #e74c3c;
+            font-weight: 600;
+            font-size: 0.9em;
+            border: 1px solid #eaeaea;
+            display: inline-block;
+        }
+        .badge {
+            background-color: #e8f4fd;
+            color: #2980b9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="header">
+        <h1>🔥 Socket.IO FULL CORE CHEATSHEET</h1>
+    </div>
+
+    <div class="section">
+        <h2>📡 1. Emit Türleri</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Komut</th>
+                        <th>Kime Gider?</th>
+                        <th>Açıklama</th>
+                        <th>Kullanım</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>socket.emit()</code></td>
+                        <td><span class="badge">Tek kullanıcı</span></td>
+                        <td>Sadece o socket</td>
+                        <td>Login response, private data</td>
+                    </tr>
+                    <tr>
+                        <td><code>io.emit()</code></td>
+                        <td><span class="badge">Herkes</span></td>
+                        <td>Global broadcast</td>
+                        <td>Sistem duyurusu</td>
+                    </tr>
+                    <tr>
+                        <td><code>socket.broadcast.emit()</code></td>
+                        <td><span class="badge">Herkes (kendisi hariç)</span></td>
+                        <td>Sender hariç broadcast</td>
+                        <td>Typing, join/leave</td>
+                    </tr>
+                    <tr>
+                        <td><code>io.to(room).emit()</code></td>
+                        <td>

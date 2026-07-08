@@ -1,1 +1,0 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"expires":{"$numberInt":"1"}},"name":"expires_1","background":true,"expireAfterSeconds":{"$numberInt":"0"}}],"uuid":"ac340e5846044c4c84ba019b019b33b3","collectionName":"sessions","type":"collection"}

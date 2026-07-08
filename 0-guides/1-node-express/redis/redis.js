@@ -1,6 +1,6 @@
 import ioredis from "ioredis";
 
-const redisCache = {
+const redisClient = new ioredis({
   host: process.env.REDIS_HOST || "localhost",
   port: Number(process.env.REDIS_PORT) || 6379,
   password: process.env.REDIS_PASSWORD || "11130113",
@@ -8,14 +8,14 @@ const redisCache = {
   // 🔌 Bağlantı stabilitesi
   connectTimeout: 5000,
    // ⚡ Cache için makul timeout
-  commandTimeout: 5000,
-  keepAlive: 30000,
+  commandTimeout: 3000,
+  keepAlive: 15000,
 
   // 🔁 Otomatik reconnect stratejisi
   retryStrategy(times) {
-    if (times > 10) return null; // 10 denemeden sonra bırak
+    if (times > 30) return null; // 10 denemeden sonra bırak
 
-    return Math.min(times * 200, 3000); //min ile sonuç 3000'i geçerse 3000 kullan
+    return Math.min(times * 100, 3000); //min ile sonuç 3000'i geçerse 3000 kullan
     // 200ms → 3000ms arası backoff
   },
 
@@ -33,12 +33,12 @@ const redisCache = {
 
     return false;
   },
-};
+})
 
-redisCache.on('connect', () => console.log('Redis connected!'))
-redisCache.on('error', (err) => confirm.error(err))
+redisClient.on('connect', () => console.log('Redis connected!'))
+redisClient.on('error', (err) => confirm.error(err))
 
-export default redisCache
+export default redisClient
 
 
 //in router---------------------------------------
