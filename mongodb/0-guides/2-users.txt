@@ -10,7 +10,7 @@ use admin //ROOT ROLE MUST TAKE ADMIN DATABASE
 db.createUser(
   {
     user: 'mesto',
-    pwd:  'mk1972mk',
+    pwd:  '11130113',
     roles: [{role:"root", db:"admin"}]
 	
   }

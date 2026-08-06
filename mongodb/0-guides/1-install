@@ -1,5 +1,15 @@
 👉️INSTALL
-go to mongodb website
+on ubuntu 26
+1 = sudo apt install gnupg curl
+2 = curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg \
+   --dearmor
+3 = echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse
+
+4 = sudo apt update
+5 = sudo apt install -y mongodb-org=8.0.20 mongodb-org-database=8.0.20 mongodb-org-server=8.0.20 mongodb-mongosh mongodb-org-mongos=8.0.20 mongodb-org-tools=8.0.20 --allow-downgrades
+
 
 👉️Error
 mongodb error MongoNetworkError: connect ECONNREFUSED 127.0.0.1:27017

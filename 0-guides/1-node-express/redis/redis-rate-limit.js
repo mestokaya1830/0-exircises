@@ -1,47 +1,48 @@
-import AppError from "../utils/app-error.js";
-import catchAsync from "../utils/catch-async.js";
-import redisClient from "./connect-redis.js";
+import { ca } from 'zod/locales';
+import redisClient from '../infra/connect.redis.js'
+import AppError from '../utils/app.error.js';
+import catchAsync from './catch.async.js';
 
-redisClient.defineCommand("checkLimit", {
+redisClient.defineCommand('checkLimit', {
   numberOfKeys: 1,
   lua: `
-    local current = redis.call('INCR', KEYS[1])
+    local current = redis.call("INCR", KEYS[1])
     if current == 1 then
-    redis.call('EXPIRE', KEYS[1], ARGV[1])
+      redis.call("EXPIRE", KEYS[1], ARGV[1])
     end
     return current
-  `,
+  `
 });
-
-
-const rateLimiter = (limit, period, type) => catchAsync(async(req, res, next) => {
+const rateLimiter = (limit, period, type) => catchAsync(async (req, res, next) => {
   const ide = {
     ip: req.ip,
     user: req.user,
-    apikey: req.headers['x-api-key'],
+    apikey: req.headers['x-api-key'] || null,
     global: 'global'
-  }[type]
+  }[type];
 
   if(!ide) {
-    return next(new AppError('Invalid IDE', 401, 'INVALID_IDE'))
+    return next(new AppError('Invalid rate limit type', 500, 'INVALID_RATE_LIMIT_TYPE'));
   }
 
-  const key = `rate-limit:${req.baseUrl}:${req.path}:${ide}`
-  const count = await redisClient.checkLimit(key, period)
-  const ttl = await redisClient.ttl(key)
+  const key = `rate-limit:${req.baseUrl}:${req.path}:${ide}`;
+  const count = await redisClient.checkLimit(key, period);
+  const ttl = await redisClient.ttl(key);
+  const retryRate = ttl > 0 ? ttl : period;
 
-  res.set('X-RateLimit-Limit', limit)
-  res.set('X-RateLimit-Remaining', Math.max(0, limit - count))
-  res.set('X-RateLimit-Reset', Math.floor(Date.now() / 1000) + ttl)
 
-  if(count > limit){
-    let remain = ttl > 0 ? ttl : period
-    return next(new  AppError('To many request', 429, 'TO_MANY_REQUEST', remain))
+  res.set('X-RateLimit-Limit', limit);
+  res.set('X-RateLimit-Remaining', Math.max(0, limit - count));
+  res.set('X-RateLimit-Reset', retryRate);
+
+  if (count > limit) {
+    return next(new AppError('Too many requests', 429, 'TOO_MANY_REQUESTS', retryRate));
   }
-  next()
-})
 
-export default rateLimiter
+  next();
+});
+
+export default rateLimiter;
 
 
 

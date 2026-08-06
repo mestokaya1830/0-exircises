@@ -1,6 +1,13 @@
+
+👉 Install redis server
+sudo apt update
+sudo apt install redis-server -y
+sudo systemctl status redis-server
+
 👉 set redis pasword-------------------------------------------
 sudo nano /etc/redis/redis.conf
-requirepassword 11130113
+
+requirepass 11130113
 
 //set redis memory
 sudo nano /etc/redis/redis.conf
